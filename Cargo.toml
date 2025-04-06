@@ -1,0 +1,16 @@
+[package]
+name = "freedesktop-sound"
+version = "0.1.0"
+edition = "2024"
+
+license = "MIT"
+description = "A Freedesktop Sound lookup crate"
+repository = "https://github.com/unixpariah/freedestkop-sound"
+readme = "README.md"
+keywords = ["sound", "gui", "freedesktop"]
+
+[dependencies]
+ini_core = "0.2.0"
+thiserror = "2.0.12"
+tracing = "0.1.41"
+xdg = "2.5.2"
