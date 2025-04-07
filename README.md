@@ -1,4 +1,6 @@
  # freedesktop-sound
+![crates.io-badge](https://img.shields.io/crates/v/freedesktop-sound)
+![docrs-badge](https://img.shields.io/docsrs/freedesktop-sound)
 
  This crate provides a [freedesktop sound](https://specifications.freedesktop.org/sound-theme-spec/latest/sound_lookup.html) lookup implementation.
 
@@ -36,7 +38,7 @@ let sound = lookup("bell")
  ```rust
  use freedesktop_sound::lookup;
 
- let sound = lookup("firefox")
+ let sound = lookup("bell")
      .with_theme("oxygen")
      .with_cache()
      .find();
