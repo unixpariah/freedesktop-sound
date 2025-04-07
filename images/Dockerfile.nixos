@@ -1,0 +1,17 @@
+FROM nixos/nix:latest
+
+RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs && \
+    nix-channel --update
+
+RUN nix-env -iA \
+    nixpkgs.rustc \
+    nixpkgs.cargo \
+    nixpkgs.gcc \          
+    nixpkgs.pkg-config \  
+    nixpkgs.sound-theme-freedesktop \
+    nixpkgs.libsForQt5.oxygen-sounds \
+    nixpkgs.deepin.deepin-sound-theme
+
+WORKDIR /usr/src/myapp
+
+COPY . .

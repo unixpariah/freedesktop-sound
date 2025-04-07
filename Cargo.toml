@@ -14,3 +14,10 @@ ini_core = "0.2.0"
 thiserror = "2.0.12"
 tracing = "0.1.41"
 xdg = "2.5.2"
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+name = "simple_lookup"
+harness = false

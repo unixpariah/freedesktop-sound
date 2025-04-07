@@ -23,16 +23,29 @@ If you have specific requirements for your lookup you can use the provided build
 ```rust
 use freedesktop_sound::lookup;
 
-let icon = lookup("bell")
+let sound = lookup("bell")
     .with_theme("oxygen")
     .find();
 ```
 
+ **Cache:**
+
+ If your application is going to repeat the same sound lookups multiple times
+ you can use the internal cache to improve performance.
+
+ ```rust
+ use freedesktop_sound::lookup;
+
+ let sound = lookup("firefox")
+     .with_theme("oxygen")
+     .with_cache()
+     .find();
+```
+
 ## Running tests
 
-Tests require Docker to resolve sound file paths correctly.
+To run tests, it's recommended to use Docker Compose, which offers images for fhs compliant and not compliant distributions:
 
 ```
-docker build -t freedesktop-sound .
-docker run freedesktop-sound
+docker compose up
 ```

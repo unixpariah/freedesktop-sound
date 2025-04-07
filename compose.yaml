@@ -1,0 +1,24 @@
+services:
+  ubuntu-tests:
+    build:
+      context: .
+      dockerfile: images/Dockerfile.ubuntu
+    working_dir: /usr/src/myapp
+    volumes:
+      - cargo-cache:/cargo-cache
+      - target-cache:/usr/src/freedesktop-sound/target
+    command: sh -c "cargo test && cargo bench"
+
+  nixos-tests:
+    build:
+      context: .
+      dockerfile: images/Dockerfile.nixos
+    working_dir: /usr/src/myapp
+    volumes:
+      - cargo-cache:/cargo-cache  
+      - target-cache:/usr/src/freedesktop-sound/target
+    command: sh -c "cargo test && cargo bench"
+
+volumes:
+  cargo-cache:
+  target-cache:

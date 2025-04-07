@@ -1,4 +1,3 @@
-mod directories;
 pub mod error;
 mod parse;
 mod paths;

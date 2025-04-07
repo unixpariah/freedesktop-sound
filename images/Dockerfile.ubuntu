@@ -1,0 +1,9 @@
+FROM devraymondsh/ubuntu-rust:latest
+
+
+RUN apt-get update && \
+    apt-get install -y sound-theme-freedesktop oxygen-sounds deepin-sound-theme 
+
+WORKDIR /usr/src/myapp
+
+COPY . .
