@@ -7,3 +7,5 @@ RUN apt-get update && \
 WORKDIR /usr/src/myapp
 
 COPY . .
+
+CMD ["cargo" "test"]

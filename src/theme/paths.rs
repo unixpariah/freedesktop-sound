@@ -34,7 +34,7 @@ impl ThemePath {
 #[cfg(test)]
 mod test {
     use crate::theme::paths::sound_theme_base_paths;
-    use crate::theme::{get_all_themes, Theme};
+    use crate::theme::{Theme, get_all_themes};
 
     #[test]
     fn should_get_all_themes() {

@@ -64,22 +64,14 @@ fn try_build_oga<P: AsRef<Path>>(name: &str, path: P) -> Option<PathBuf> {
     let path = path.as_ref();
     let oga = path.join(format!("{name}.oga"));
 
-    if oga.exists() {
-        Some(oga)
-    } else {
-        None
-    }
+    if oga.exists() { Some(oga) } else { None }
 }
 
 fn try_build_ogg<P: AsRef<Path>>(name: &str, path: P) -> Option<PathBuf> {
     let path = path.as_ref();
     let ogg = path.join(format!("{name}.ogg"));
 
-    if ogg.exists() {
-        Some(ogg)
-    } else {
-        None
-    }
+    if ogg.exists() { Some(ogg) } else { None }
 }
 
 fn try_build_disabled<P: AsRef<Path>>(name: &str, path: P) -> Option<PathBuf> {
@@ -97,9 +89,5 @@ fn try_build_wav<P: AsRef<Path>>(name: &str, path: P) -> Option<PathBuf> {
     let path = path.as_ref();
     let wav = path.join(format!("{name}.wav"));
 
-    if wav.exists() {
-        Some(wav)
-    } else {
-        None
-    }
+    if wav.exists() { Some(wav) } else { None }
 }

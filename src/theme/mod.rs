@@ -4,7 +4,7 @@ mod paths;
 
 use error::ThemeError;
 use parse::try_build_sound_path;
-use paths::{ThemePath, BASE_PATHS};
+use paths::{BASE_PATHS, ThemePath};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},

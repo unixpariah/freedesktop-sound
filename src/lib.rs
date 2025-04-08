@@ -1,7 +1,7 @@
 mod cache;
 mod theme;
 
-use cache::{CacheEntry, CACHE};
+use cache::{CACHE, CacheEntry};
 use std::{io::BufRead, path::PathBuf};
 use theme::THEMES;
 
