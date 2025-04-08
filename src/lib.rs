@@ -21,7 +21,7 @@ pub fn list_themes() -> Vec<String> {
                 }
 
                 if let Some(name) = line.strip_prefix("Name=") {
-                    return Some(name.trim().to_owned());
+                    return Some(name.trim().into());
                 }
 
                 line.clear();
@@ -129,20 +129,53 @@ pub fn lookup(name: &str) -> LookupBuilder {
 
 #[cfg(test)]
 mod tests {
+    use crate::{list_themes, lookup};
     use std::path::PathBuf;
 
-    use crate::lookup;
+    // Helper function to determine expected path base
+    fn get_base_path() -> PathBuf {
+        if PathBuf::from("/etc/NIXOS").exists() {
+            PathBuf::from("/nix/var/nix/profiles/default/share/sounds")
+        } else {
+            PathBuf::from("/usr/share/sounds")
+        }
+    }
 
     #[test]
-    fn simple_lookup() {
+    fn test_default_lookup() {
         let bell = lookup("bell").find();
-        let path = match PathBuf::from("/etc/NIXOS").exists() {
-            true => {
-                PathBuf::from("/run/current-system/sw/share/sounds/freedesktop/stereo/bell.oga")
-            }
-            false => PathBuf::from("/usr/share/sounds/freedesktop/stereo/bell.oga"),
-        };
+        let expected_path = get_base_path().join("freedesktop/stereo/bell.oga");
+        assert!(bell.is_some_and(|b| b == expected_path));
+    }
 
-        assert!(bell.is_some_and(|b| b == path));
+    #[test]
+    fn test_theme_specific_lookup() {
+        let bell = lookup("bell").with_theme("oxygen").find();
+        let expected_path = get_base_path().join("oxygen/stereo/bell.ogg");
+        assert!(bell.is_some_and(|b| b == expected_path));
+    }
+
+    #[test]
+    fn test_nonexistent_sound() {
+        let result = lookup("nonexistent_sound").find();
+        assert!(result.is_none());
+    }
+
+    // Check if it will fallback to default theme
+    #[test]
+    fn test_nonexistent_theme() {
+        let result = lookup("bell").with_theme("nonexistent_theme").find();
+        let expected_path = get_base_path().join("freedesktop/stereo/bell.oga");
+        assert!(result.is_some_and(|p| p == expected_path));
+    }
+
+    #[test]
+    fn test_list_themes() {
+        let themes = list_themes();
+        println!("{:?}", themes);
+        assert!(!themes.is_empty());
+        assert!(themes.contains(&"Default".to_string()));
+        assert!(themes.contains(&"Oxygen".to_string()));
+        assert!(themes.contains(&"Deepin".to_string()));
     }
 }

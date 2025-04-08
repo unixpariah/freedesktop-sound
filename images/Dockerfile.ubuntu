@@ -1,6 +1,24 @@
-FROM devraymondsh/ubuntu-rust:latest
+FROM ubuntu:25.04
+USER root
+ENV USER root
 
+RUN apt-get update \
+    && apt-get install -y \
+    apt-utils \
+    curl \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
+RUN curl https://sh.rustup.rs -sSf > /tmp/rustup-init.sh \
+    && chmod +x /tmp/rustup-init.sh \
+    && sh /tmp/rustup-init.sh -y \
+    && rm -rf /tmp/rustup-init.sh
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN cargo search
+
+RUN rustup install nightly
 RUN apt-get update && \
     apt-get install -y sound-theme-freedesktop oxygen-sounds deepin-sound-theme 
 
@@ -8,4 +26,4 @@ WORKDIR /usr/src/myapp
 
 COPY . .
 
-CMD ["cargo" "test"]
+CMD ["cargo", "test"]
