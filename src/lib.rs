@@ -1,7 +1,7 @@
 mod cache;
 mod theme;
 
-use cache::{CACHE, CacheEntry};
+use cache::{CacheEntry, CACHE};
 use std::{io::BufRead, path::PathBuf};
 use theme::THEMES;
 
@@ -129,20 +129,90 @@ pub fn lookup(name: &str) -> LookupBuilder {
 
 #[cfg(test)]
 mod tests {
+    use crate::{cache::CacheEntry, list_themes, lookup, CACHE};
     use std::path::PathBuf;
 
-    use crate::lookup;
+    // Helper function to determine expected path base
+    fn get_base_path() -> PathBuf {
+        if PathBuf::from("/etc/NIXOS").exists() {
+            PathBuf::from("/run/current-system/sw/share/sounds")
+        } else {
+            PathBuf::from("/usr/share/sounds")
+        }
+    }
 
     #[test]
-    fn simple_lookup() {
+    fn test_default_lookup() {
         let bell = lookup("bell").find();
-        let path = match PathBuf::from("/etc/NIXOS").exists() {
-            true => {
-                PathBuf::from("/run/current-system/sw/share/sounds/freedesktop/stereo/bell.oga")
-            }
-            false => PathBuf::from("/usr/share/sounds/freedesktop/stereo/bell.oga"),
-        };
+        let expected_path = get_base_path().join("freedesktop/stereo/bell.oga");
+        assert!(bell.is_some_and(|b| b == expected_path));
+    }
 
-        assert!(bell.is_some_and(|b| b == path));
+    #[test]
+    fn test_theme_specific_lookup() {
+        let bell = lookup("bell").with_theme("oxygen").find();
+        let expected_path = get_base_path().join("oxygen/stereo/bell.ogg");
+        assert!(bell.is_some_and(|b| b == expected_path));
+    }
+
+    #[test]
+    fn test_caching_behavior() {
+        let bell = lookup("bell").with_cache().find();
+        let expected_path = get_base_path().join("freedesktop/stereo/bell.oga");
+        assert!(bell.as_ref().is_some_and(|b| *b == expected_path));
+
+        let cached_sound = CACHE.get("freedesktop", "bell");
+        let CacheEntry::Found(cached_path) = cached_sound else {
+            panic!("Expected CacheEntry::Found but got something else");
+        };
+        assert_eq!(Some(cached_path), bell);
+    }
+
+    #[test]
+    fn test_negative_cache() {
+        let result = lookup("nonexistent_sound").with_cache().find();
+        assert!(result.is_none());
+
+        let cached_result = CACHE.get("freedesktop", "nonexistent_sound");
+        assert!(matches!(cached_result, CacheEntry::NotFound));
+    }
+
+    #[test]
+    fn test_cache_with_different_themes() {
+        let oxygen_bell = lookup("bell").with_theme("oxygen").with_cache().find();
+        let default_bell = lookup("bell").with_cache().find();
+
+        assert!(oxygen_bell.is_some());
+        assert!(default_bell.is_some());
+        assert_ne!(oxygen_bell, default_bell);
+
+        let oxygen_cached = CACHE.get("oxygen", "bell");
+        let default_cached = CACHE.get("freedesktop", "bell");
+
+        assert!(matches!(oxygen_cached, CacheEntry::Found(_)));
+        assert!(matches!(default_cached, CacheEntry::Found(_)));
+    }
+
+    #[test]
+    fn test_nonexistent_sound() {
+        let result = lookup("nonexistent_sound").find();
+        assert!(result.is_none());
+    }
+
+    // Check if it will fallback to default theme
+    #[test]
+    fn test_nonexistent_theme() {
+        let result = lookup("bell").with_theme("nonexistent_theme").find();
+        let expected_path = get_base_path().join("freedesktop/stereo/bell.oga");
+        assert!(result.is_some_and(|p| p == expected_path));
+    }
+
+    #[test]
+    fn test_list_themes() {
+        let themes = list_themes();
+        assert!(!themes.is_empty());
+        assert!(themes.contains(&"Default".to_string()));
+        assert!(themes.contains(&"Oxygen".to_string()));
+        assert!(themes.contains(&"Deepin".to_string()));
     }
 }
