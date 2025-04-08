@@ -1,6 +1,8 @@
  # freedesktop-sound
 ![crates.io-badge](https://img.shields.io/crates/v/freedesktop-sound)
-![docrs-badge](https://img.shields.io/docsrs/freedesktop-sound)
+[![Build Status](https://github.com/unixpariah/freedesktop-sound/actions/workflows/tests.yml/badge.svg)](https://github.com/unixpariah/freedesktop-sound/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/unixpariah/freedesktop-sound/graph/badge.svg?token=49LRWZ9D1K)](https://codecov.io/gh/unixpariah/freedesktop-sound)
+[![docs](https://docs.rs/freedesktop-sound/badge.svg)](https://docs.rs/freedesktop-sound/latest/freedesktop-sound/index.html)
 
  This crate provides a [freedesktop sound](https://specifications.freedesktop.org/sound-theme-spec/latest/sound_lookup.html) lookup implementation.
 

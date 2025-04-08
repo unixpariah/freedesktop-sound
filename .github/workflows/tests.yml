@@ -1,11 +1,9 @@
 name: Rust Tests
-
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
-
+    branches: [ main ]
 jobs:
   test:
     name: Test
@@ -20,7 +18,7 @@ jobs:
         with:
           toolchain: stable
           override: true
-          components: clippy, rustfmt
+          components: clippy, rustfmt, llvm-tools-preview
       
       - name: Cache Rust dependencies
         uses: actions/cache@v3
@@ -38,11 +36,35 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sound-theme-freedesktop oxygen-sounds deepin-sound-theme
       
-      - name: Run tests
+      - name: Run tests with coverage
+        env:
+          RUSTFLAGS: -Cinstrument-coverage
+          LLVM_PROFILE_FILE: grcov-%p-%m.profraw
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --verbose
+      
+      - name: Install grcov
+        run: cargo install grcov
+      
+      - name: Generate coverage report
+        run: |
+          grcov $(find . -name "grcov-*.profraw" -print) \
+            --branch \
+            --ignore-not-existing \
+            --binary-path ./target/debug/ \
+            -s . \
+            -t lcov \
+            --ignore "/*" \
+            -o lcov.info
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./lcov.info
+          fail_ci_if_error: true
       
       - name: Check formatting
         uses: actions-rs/cargo@v1
