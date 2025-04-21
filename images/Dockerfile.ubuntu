@@ -1,29 +1,30 @@
-FROM ubuntu:25.04
-USER root
-ENV USER root
+FROM rust:latest AS base
+RUN cargo install sccache --version ^0.7
+RUN cargo install cargo-chef --version ^0.1
+ENV RUSTC_WRAPPER=sccache SCCACHE_DIR=/sccache
 
-RUN apt-get update \
-    && apt-get install -y \
-    apt-utils \
-    curl \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl https://sh.rustup.rs -sSf > /tmp/rustup-init.sh \
-    && chmod +x /tmp/rustup-init.sh \
-    && sh /tmp/rustup-init.sh -y \
-    && rm -rf /tmp/rustup-init.sh
-
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN cargo search
-
-RUN rustup install nightly
 RUN apt-get update && \
-    apt-get install -y sound-theme-freedesktop oxygen-sounds deepin-sound-theme 
+    apt-get install -y sound-theme-freedesktop deepin-sound-theme 
 
-WORKDIR /usr/src/myapp
+RUN git clone https://github.com/KDE/oxygen-sounds.git && mv oxygen-sounds/sounds/oxygen /usr/share/sounds
 
+FROM base AS planner
+WORKDIR /app
 COPY . .
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo chef prepare --recipe-path recipe.json
+
+FROM base AS builder
+WORKDIR /app
+COPY --from=planner /app/recipe.json recipe.json
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo chef cook --release --recipe-path recipe.json
+COPY . .
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo test --no-run
 
 CMD ["cargo", "test"]

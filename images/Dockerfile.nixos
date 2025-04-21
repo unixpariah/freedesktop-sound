@@ -3,15 +3,21 @@ FROM nixos/nix:latest
 RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs && \
     nix-channel --update
 
+RUN mkdir /etc/NIXOS
+
+ENV XDG_DATA_DIRS=/nix/store/nk427kbyf9l6fpfdxb8hmrq2nlkl8nfl-patchelf-0.15.0/share:/nix/store/0dqkjc759wcbwk4rxvma27y7qqvjysmh-ghostty-1.1.3/share:/nix/store/lp1n3fdfisbzvdgvmk7jk7xivl8hg2n5-gsettings-desktop-schemas-47.1/share/gsettings-schemas/gsettings-desktop-schemas-47.1:/nix/store/jlbffm71ylch5dyw44g2p2c857p1yqjv-gtk4-4.16.12/share/gsettings-schemas/gtk4-4.16.12:/nix/store/ikwbq3v2s5m2qh609p3im45qgwm5z7yk-desktops/share:/home/unixpariah/.nix-profile/share:/nix/profile/share:/home/unixpariah/.local/state/nix/profile/share:/etc/profiles/per-user/unixpariah/share:/nix/var/nix/profiles/default/share:/run/current-system/sw/share
+
 RUN nix-env -iA \
     nixpkgs.rustc \
     nixpkgs.cargo \
     nixpkgs.gcc \          
     nixpkgs.pkg-config \  
     nixpkgs.sound-theme-freedesktop \
-    nixpkgs.libsForQt5.oxygen-sounds \
+    nixpkgs.kdePackages.oxygen-sounds \
     nixpkgs.deepin.deepin-sound-theme
 
-WORKDIR /usr/src/myapp
+WORKDIR /app
 
 COPY . .
+
+CMD ["cargo", "test"]

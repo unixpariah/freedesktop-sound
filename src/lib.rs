@@ -172,7 +172,6 @@ mod tests {
     #[test]
     fn test_list_themes() {
         let themes = list_themes();
-        println!("{:?}", themes);
         assert!(!themes.is_empty());
         assert!(themes.contains(&"Default".to_string()));
         assert!(themes.contains(&"Oxygen".to_string()));

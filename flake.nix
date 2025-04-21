@@ -42,6 +42,7 @@
               ))
               rust-analyzer-unwrapped
               nixd
+              just
             ];
           };
       });

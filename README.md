@@ -48,8 +48,8 @@ let sound = lookup("bell")
 
 ## Running tests
 
-To run tests, it's recommended to use Docker Compose, which offers images for fhs compliant and not compliant distributions:
+To run tests, it's recommended to use docker, there are images for fhs compliant and not compliant distributions:
 
 ```
-docker compose up
+just test
 ```
