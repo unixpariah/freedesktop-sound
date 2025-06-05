@@ -5,7 +5,7 @@ edition = "2024"
 
 license = "MIT"
 description = "A Freedesktop Sound lookup crate"
-repository = "https://github.com/unixpariah/freedestkop-sound"
+repository = "https://github.com/unixpariah/freedesktop-sound"
 readme = "README.md"
 keywords = ["sound", "gui", "freedesktop"]
 
